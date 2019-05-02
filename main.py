@@ -7,8 +7,6 @@ import pygame
 
 import pg
 import creature
-import projectile
-import world
 import food
 
 
@@ -32,11 +30,12 @@ def redraw():
     pygame.display.update()
 
 
-spawn(5)
+spawn(1)
 RUN = True
 
 while RUN:
-    pygame.time.delay(5)
+    TIME = pygame.time.get_ticks()
+    pygame.time.delay(15)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

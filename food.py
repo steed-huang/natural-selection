@@ -1,16 +1,19 @@
-"""module docstring"""
+"""food class module"""
+import pygame
+import pg
 
 
 class Food():
-    """class docstring"""
+    """food for creature consumption"""
+    img = pygame.image.load('assets/apple.png')
 
-    def __init__(self):
-        self.foo = 1
+    def __init__(self, x, y):
+        self.x_pos = x
+        self.y_pos = y
+        self.rad = 5
+        self.f_img = pygame.transform.scale(self.img, (self.rad*2, self.rad*2))
 
-    def bar(self):
-        """method docstring"""
-        self.foo = 1
-
-    def baz(self):
-        """method docstring"""
-        self.foo = 1
+    def draw(self):
+        """draws food"""
+        pg.WIN.blit(self.f_img, (self.x_pos-(self.rad // 2),
+                                 self.y_pos-(self.rad // 2)))
