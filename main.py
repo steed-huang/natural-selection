@@ -4,17 +4,35 @@ import math
 import random
 import os
 import pygame
+
+import pg
 import creature
 import projectile
 import world
 import food
 
 
-pygame.init()
+def spawn(num):
+    """spawns num creatures"""
+    for _ in range(num):
+        pg.CREATURES.append(creature.Creature(350, 350))
 
-WIN = pygame.display.set_mode((700, 700))
-pygame.display.set_caption("Natural Selection")
 
+def move_creatures():
+    """moves every creature"""
+    for ctr in pg.CREATURES:
+        ctr.move()
+
+
+def redraw():
+    """redraws entire game"""
+    pg.WIN.fill((0, 0, 0))
+    for ctr in pg.CREATURES:
+        ctr.draw()
+    pygame.display.update()
+
+
+spawn(5)
 RUN = True
 
 while RUN:
@@ -24,7 +42,8 @@ while RUN:
         if event.type == pygame.QUIT:
             RUN = False
 
-    WIN.fill((0, 0, 0))
-    pygame.display.update()
+    move_creatures()
+    redraw()
+
 
 pygame.quit()
