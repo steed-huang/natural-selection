@@ -15,5 +15,4 @@ class Food():
 
     def draw(self):
         """draws food"""
-        pg.WIN.blit(self.f_img, (self.x_pos-(self.rad // 2),
-                                 self.y_pos-(self.rad // 2)))
+        pg.WIN.blit(self.f_img, (self.x_pos-(self.rad), self.y_pos-(self.rad)))
