@@ -17,16 +17,16 @@ class Genome():
     def combine(self, dna1, dna2):
         """combines genes when bred"""
         for gene in dna1:  # should find some better combination method
-            if random.randrange(2):  # 50% chance of passing on each genes
-                self.dna[gene] += dna1[gene]
+            # if random.randrange(2):  # 50% chance of passing on each genes
+            self.dna[gene] += dna1[gene]
         for gene in dna2:
-            if random.randrange(2):  # 50% chance of passing on each genes
-                self.dna[gene] += dna2[gene]
+            # if random.randrange(2):  # 50% chance of passing on each genes
+            self.dna[gene] += dna2[gene]
 
     def mutate(self):
         """random chance of gene mutation"""
         rand = random.randint(1, 100)
-        if rand <= 5:
+        if rand <= 95:  # very high chance to make it more interesting
             self.dna[random.randrange(5)] += 1
         elif rand > 95:
             self.dna[random.randrange(5)] -= 1

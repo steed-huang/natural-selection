@@ -33,6 +33,14 @@ def creature_action(time):
         ctr.starve(time)
 
 
+def refill_food(num, refill_delay, time):
+    """spawns in num food in refill_delay increments"""
+    if time - pg.LAST_SPAWN >= refill_delay:
+        pg.FOOD = []
+        spawn_food(num)
+        pg.LAST_SPAWN = time
+
+
 def redraw():
     """redraws entire game"""
     pg.WIN.fill((0, 0, 0))
@@ -44,7 +52,7 @@ def redraw():
 
 
 spawn(100)
-spawn_food(200)
+spawn_food(100)
 RUN = True
 
 while RUN:
@@ -55,6 +63,7 @@ while RUN:
         if event.type == pygame.QUIT:
             RUN = False
 
+    refill_food(100, 10000, TIME)
     creature_action(TIME)
     redraw()
 

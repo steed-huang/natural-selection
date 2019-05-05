@@ -8,10 +8,12 @@ import genome
 
 class Creature():
     """creature has different attributes based off its genes"""
-    img = pygame.image.load('assets/creature.png')
+    img1 = pygame.image.load('assets/creature.png')
+    img2 = pygame.image.load('assets/mating_creature.png')
 
     def __init__(self, x, y):
         self.gene = genome.Genome()
+        self.gene.mutate()
         self.x_pos = x
         self.y_pos = y
         self.rad = 10
@@ -23,27 +25,36 @@ class Creature():
         self.satiation = 0
         self.last_starve = 0
         self.hunger = 10000
-        self.c_img = pygame.transform.scale(self.img, (self.rad*2, self.rad*2))
+        self.c_img = pygame.transform.scale(
+            self.img1, (self.rad*2, self.rad*2))
+        self.mc_img = pygame.transform.scale(
+            self.img2, (self.rad*2, self.rad*2))
+
         # self.hitbox = (self.x_pos-self.rad, self.y_pos -
         #               self.rad, self.rad * 2, self.rad*2)
 
     def move(self):
         """moves creature"""
-        # the creature can be conflicted and stuck inbetween multiple apples in vision (feature? jk fix pls)
-        for apple in pg.FOOD:  # move towards food
+        # breeding | should be prioritized over eating | possibilty of 2 children (feature? twins?)
+        if self.satiation >= 2:
+            for ctr in pg.CREATURES:
+                if ctr != self and ctr.satiation >= 2 and pg.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) <= self.vision:
+                    self.move_towards(ctr.x_pos, ctr.y_pos)
+                    if pg.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) < self.rad * 2:
+                        pg.CREATURES.append(
+                            self.reproduce(self.x_pos, self.y_pos,
+                                           self.gene.dna, ctr.gene.dna))
+                        self.satiation -= 2
+                        ctr.satiation -= 2
+        # eating | the creature can be conflicted and stuck inbetween multiple apples in vision (feature? jk fix pls)
+        for apple in pg.FOOD:
             if pg.distance((self.x_pos, self.y_pos), (apple.x_pos, apple.y_pos)) <= self.vision:
-                try:
-                    (d_x, d_y) = ((apple.x_pos - self.x_pos)/math.sqrt((apple.x_pos - self.x_pos) ** 2 + (apple.y_pos - self.y_pos) ** 2),
-                                  (apple.y_pos - self.y_pos)/math.sqrt((apple.y_pos - self.y_pos) ** 2 + (apple.x_pos - self.y_pos) ** 2))
-                except ZeroDivisionError:
-                    (d_x, d_y) = (0, 0)
-                self.x_pos += d_x * self.speed
-                self.y_pos += d_y * self.speed
+                self.move_towards(apple.x_pos, apple.y_pos)
                 if pg.distance((self.x_pos, self.y_pos), (apple.x_pos, apple.y_pos)) < apple.rad * 2:
                     pg.FOOD.pop(pg.FOOD.index(apple))
                     self.eat()
-
-        rand = random.randrange(4)  # random jiggle movement
+        # random jiggle movement
+        rand = random.randrange(4)
         if rand == 0:
             if self.x_pos + self.rad + self.speed < 700:
                 self.x_pos += self.speed
@@ -57,6 +68,16 @@ class Creature():
             if self.y_pos - self.rad - self.speed > 0:
                 self.y_pos -= self.speed
 
+    def move_towards(self, x_pos, y_pos):
+        """moves creature towards given pair of coordinates"""
+        try:
+            (d_x, d_y) = ((x_pos - self.x_pos)/math.sqrt((x_pos - self.x_pos) ** 2 + (y_pos - self.y_pos) ** 2),
+                          (y_pos - self.y_pos)/math.sqrt((y_pos - self.y_pos) ** 2 + (x_pos - self.y_pos) ** 2))
+        except ZeroDivisionError:
+            (d_x, d_y) = (0, 0)
+        self.x_pos += d_x * self.speed
+        self.y_pos += d_y * self.speed
+
     def eat(self):
         """increases satiation after eating"""
         self.satiation += 1
@@ -68,12 +89,24 @@ class Creature():
         elif time - self.last_starve >= self.hunger:
             self.satiation -= 1
             self.last_starve = time
-            if self.satiation == -1:
-                pg.CREATURES.pop(pg.CREATURES.index(self))
+        if self.satiation < 0:
+            pg.CREATURES.pop(pg.CREATURES.index(self))
+
+    def reproduce(self, x_pos, y_pos, dna1, dna2):
+        """creates new child creature"""
+        new_creature = type(self)(x_pos, y_pos)
+        new_creature.gene.combine(dna1, dna2)
+        print(new_creature.gene.dna)
+        return new_creature
 
     def draw(self):
         """draws creature"""
-        pg.WIN.blit(self.c_img, (self.x_pos-self.rad, self.y_pos-self.rad))
+        if self.satiation >= 2:
+            pg.WIN.blit(self.mc_img, (self.x_pos-self.rad,
+                                      self.y_pos-self.rad))
+        else:
+            pg.WIN.blit(self.c_img, (self.x_pos-self.rad,
+                                     self.y_pos-self.rad))
         # shows vision (for debug)
         pygame.draw.circle(pg.WIN, (255, 0, 0),
                            (round(self.x_pos), round(self.y_pos)), round(self.vision), 1)
