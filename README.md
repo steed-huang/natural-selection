@@ -15,3 +15,11 @@ Repo for experimenting with genetic algorithms in Python
 * Aggro: chance of attacking
 * Health: health points
 * Damage: damage points
+
+**Todo**
+* Redo creature pathfinding method so they dont get stuck
+* Prioritize breeding over eating
+* Add combat mechanics
+* Tweak numbers/balance the simulation to be more realistic
+* Add some data visualizations
+* Clean up code and optimize 
