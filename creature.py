@@ -18,9 +18,11 @@ class Creature():
         self.health = 30 + 30 * ((10 * self.gene.dna[0]) / 100)
         self.damage = 10 + 10 * ((10 * self.gene.dna[1]) / 100)
         self.speed = 1 + ((10 * self.gene.dna[2]) / 100)
-        self.vision = 50 + 30 * ((10 * self.gene.dna[3]) / 100)
+        self.vision = 50 + 50 * ((10 * self.gene.dna[3]) / 100)
         self.aggro = 20 + 20 * ((10 * self.gene.dna[4]) / 100)
         self.satiation = 0
+        self.last_starve = 0
+        self.hunger = 10000
         self.c_img = pygame.transform.scale(self.img, (self.rad*2, self.rad*2))
         # self.hitbox = (self.x_pos-self.rad, self.y_pos -
         #               self.rad, self.rad * 2, self.rad*2)
@@ -58,6 +60,16 @@ class Creature():
     def eat(self):
         """increases satiation after eating"""
         self.satiation += 1
+
+    def starve(self, time):
+        """uses up satiation every 'hunger' seconds, dies if no satiation"""
+        if self.last_starve == 0:
+            self.last_starve = time
+        elif time - self.last_starve >= self.hunger:
+            self.satiation -= 1
+            self.last_starve = time
+            if self.satiation == -1:
+                pg.CREATURES.pop(pg.CREATURES.index(self))
 
     def draw(self):
         """draws creature"""

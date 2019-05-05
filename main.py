@@ -26,10 +26,11 @@ def spawn_food(num):
         pg.FOOD.append(food.Food(x_pos, y_pos))
 
 
-def move_creatures():
-    """moves every creature"""
+def creature_action(time):
+    """carries out all creature processes"""
     for ctr in pg.CREATURES:
         ctr.move()
+        ctr.starve(time)
 
 
 def redraw():
@@ -48,13 +49,13 @@ RUN = True
 
 while RUN:
     TIME = pygame.time.get_ticks()
-    pygame.time.wait(15)  # uses less cpu than delay
+    pygame.time.wait(10)  # uses less cpu than delay
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             RUN = False
 
-    move_creatures()
+    creature_action(TIME)
     redraw()
 
 
