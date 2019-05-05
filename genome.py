@@ -22,11 +22,13 @@ class Genome():
         for gene in dna2:
             # if random.randrange(2):  # 50% chance of passing on each genes
             self.dna[gene] += dna2[gene]
+        for gene in self.dna:
+            self.dna[gene] /= 2
 
     def mutate(self):
         """random chance of gene mutation"""
         rand = random.randint(1, 100)
-        if rand <= 95:  # very high chance to make it more interesting
+        if rand <= 40:  # very high chance to make it more interesting
             self.dna[random.randrange(5)] += 1
-        elif rand > 95:
+        elif rand > 80:
             self.dna[random.randrange(5)] -= 1

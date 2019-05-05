@@ -41,11 +41,12 @@ class Creature():
                 if ctr != self and ctr.satiation >= 2 and pg.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) <= self.vision:
                     self.move_towards(ctr.x_pos, ctr.y_pos)
                     if pg.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) < self.rad * 2:
+                        self.satiation -= 2
+                        ctr.satiation -= 2
                         pg.CREATURES.append(
                             self.reproduce(self.x_pos, self.y_pos,
                                            self.gene.dna, ctr.gene.dna))
-                        self.satiation -= 2
-                        ctr.satiation -= 2
+
         # eating | the creature can be conflicted and stuck inbetween multiple apples in vision (feature? jk fix pls)
         for apple in pg.FOOD:
             if pg.distance((self.x_pos, self.y_pos), (apple.x_pos, apple.y_pos)) <= self.vision:
@@ -96,8 +97,17 @@ class Creature():
         """creates new child creature"""
         new_creature = type(self)(x_pos, y_pos)
         new_creature.gene.combine(dna1, dna2)
+        new_creature.update_atts()
         print(new_creature.gene.dna)
         return new_creature
+
+    def update_atts(self):
+        """updates attributes to be affected by genes"""
+        self.health = 30 + 30 * ((10 * self.gene.dna[0]) / 100)
+        self.damage = 10 + 10 * ((10 * self.gene.dna[1]) / 100)
+        self.speed = 1 + ((10 * self.gene.dna[2]) / 100)
+        self.vision = 50 + 50 * ((10 * self.gene.dna[3]) / 100)
+        self.aggro = 20 + 20 * ((10 * self.gene.dna[4]) / 100)
 
     def draw(self):
         """draws creature"""

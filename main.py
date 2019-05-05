@@ -13,16 +13,16 @@ import food
 def spawn(num):
     """spawns num creatures"""
     for _ in range(num):
-        x_pos = random.randrange(700)
-        y_pos = random.randrange(700)
+        x_pos = random.randrange(200, 500)
+        y_pos = random.randrange(200, 500)
         pg.CREATURES.append(creature.Creature(x_pos, y_pos))
 
 
 def spawn_food(num):
     """spawns num food in random locations"""
     for _ in range(num):
-        x_pos = random.randrange(700)
-        y_pos = random.randrange(700)
+        x_pos = random.randrange(200, 500)
+        y_pos = random.randrange(200, 500)
         pg.FOOD.append(food.Food(x_pos, y_pos))
 
 
@@ -51,8 +51,8 @@ def redraw():
     pygame.display.update()
 
 
-spawn(100)
-spawn_food(100)
+spawn(10)
+spawn_food(50)
 RUN = True
 
 while RUN:
@@ -63,7 +63,7 @@ while RUN:
         if event.type == pygame.QUIT:
             RUN = False
 
-    refill_food(100, 10000, TIME)
+    refill_food(50, 10000, TIME)
     creature_action(TIME)
     redraw()
 
