@@ -4,6 +4,7 @@ import math
 import pygame
 import pg
 import genome
+from food import Food
 
 
 class Creature():
@@ -20,7 +21,7 @@ class Creature():
         self.health = 30 + 30 * ((10 * self.gene.dna[0]) / 100)
         self.damage = 10 + 10 * ((10 * self.gene.dna[1]) / 100)
         self.speed = 1 + ((10 * self.gene.dna[2]) / 100)
-        self.vision = 50 + 50 * ((10 * self.gene.dna[3]) / 100)
+        self.vision = 60 + 60 * ((10 * self.gene.dna[3]) / 100)
         self.aggro = 20 + 20 * ((10 * self.gene.dna[4]) / 100)
         self.satiation = 0
         self.last_starve = 0
@@ -35,7 +36,7 @@ class Creature():
 
     def move(self):
         """moves creature"""
-        # breeding | should be prioritized over eating | possibilty of 2 children (feature? twins?)
+        # breeding | bug: 2+ children sometimes (feature?)
         if self.satiation >= 2:
             for ctr in pg.CREATURES:
                 if ctr != self and ctr.satiation >= 2 and pg.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) <= self.vision:
@@ -46,14 +47,16 @@ class Creature():
                         pg.CREATURES.append(
                             self.reproduce(self.x_pos, self.y_pos,
                                            self.gene.dna, ctr.gene.dna))
-
-        # eating | the creature can be conflicted and stuck inbetween multiple apples in vision (feature? jk fix pls)
+        # eating
+        closest = Food(9999, 9999)
         for apple in pg.FOOD:
-            if pg.distance((self.x_pos, self.y_pos), (apple.x_pos, apple.y_pos)) <= self.vision:
-                self.move_towards(apple.x_pos, apple.y_pos)
-                if pg.distance((self.x_pos, self.y_pos), (apple.x_pos, apple.y_pos)) < apple.rad * 2:
-                    pg.FOOD.pop(pg.FOOD.index(apple))
-                    self.eat()
+            if pg.distance((self.x_pos, self.y_pos), (apple.x_pos, apple.y_pos)) < pg.distance((self.x_pos, self.y_pos), (closest.x_pos, closest.y_pos)):
+                closest = apple
+        if pg.distance((self.x_pos, self.y_pos), (closest.x_pos, closest.y_pos)) <= self.vision:
+            self.move_towards(closest.x_pos, closest.y_pos)
+            if pg.distance((self.x_pos, self.y_pos), (closest.x_pos, closest.y_pos)) < closest.rad * 2:
+                pg.FOOD.pop(pg.FOOD.index(closest))
+                self.eat()
         # random jiggle movement
         rand = random.randrange(4)
         if rand == 0:
