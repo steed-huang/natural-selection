@@ -1,10 +1,6 @@
 """Natural Selection Creature Survival Simulation"""
-import sys
-import math
 import random
-import os
 import pygame
-
 import pg
 import creature
 import food
@@ -51,7 +47,7 @@ def redraw():
     pygame.display.update()
 
 
-spawn(5)
+spawn(10)
 spawn_food(100)
 RUN = True
 

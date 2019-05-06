@@ -1,6 +1,5 @@
 """creature class module"""
 import random
-import math
 import pygame
 import pg
 import genome
@@ -37,50 +36,56 @@ class Creature():
     def move(self):
         """moves creature"""
         # breeding | bug: 2+ children sometimes (feature?)
+        other_move = False
         if self.satiation >= 2:
             for ctr in pg.CREATURES:
                 if ctr != self and ctr.satiation >= 2 and pg.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) <= self.vision:
                     self.move_towards(ctr.x_pos, ctr.y_pos)
                     if pg.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) < self.rad * 2:
+                        other_move = True
                         self.satiation -= 2
                         ctr.satiation -= 2
                         pg.CREATURES.append(
                             self.reproduce(self.x_pos, self.y_pos,
                                            self.gene.dna, ctr.gene.dna))
         # eating
-        closest = Food(9999, 9999)
-        for apple in pg.FOOD:
-            if pg.distance((self.x_pos, self.y_pos), (apple.x_pos, apple.y_pos)) < pg.distance((self.x_pos, self.y_pos), (closest.x_pos, closest.y_pos)):
-                closest = apple
-        if pg.distance((self.x_pos, self.y_pos), (closest.x_pos, closest.y_pos)) <= self.vision:
-            self.move_towards(closest.x_pos, closest.y_pos)
-            if pg.distance((self.x_pos, self.y_pos), (closest.x_pos, closest.y_pos)) < closest.rad * 2:
-                pg.FOOD.pop(pg.FOOD.index(closest))
-                self.eat()
+        if not other_move:
+            closest = Food(9999, 9999)
+            for apple in pg.FOOD:
+                if pg.distance((self.x_pos, self.y_pos), (apple.x_pos, apple.y_pos)) < pg.distance((self.x_pos, self.y_pos), (closest.x_pos, closest.y_pos)):
+                    closest = apple
+            if pg.distance((self.x_pos, self.y_pos), (closest.x_pos, closest.y_pos)) <= self.vision:
+                self.move_towards(closest.x_pos, closest.y_pos)
+                other_move = True
+                if pg.distance((self.x_pos, self.y_pos), (closest.x_pos, closest.y_pos)) < closest.rad * 2:
+                    pg.FOOD.pop(pg.FOOD.index(closest))
+                    self.eat()
         # random jiggle movement
-        rand = random.randrange(4)
-        if rand == 0:
-            if self.x_pos + self.rad + self.speed < 700:
-                self.x_pos += self.speed
-        if rand == 1:
-            if self.x_pos - self.rad - self.speed > 0:
-                self.x_pos -= self.speed
-        if rand == 2:
-            if self.y_pos + self.rad + self.speed < 700:
-                self.y_pos += self.speed
-        if rand == 3:
-            if self.y_pos - self.rad - self.speed > 0:
-                self.y_pos -= self.speed
+        if not other_move:
+            rand = random.randrange(4)
+            if rand == 0:
+                if self.x_pos + self.rad + self.speed < 700:
+                    self.x_pos += self.speed
+            if rand == 1:
+                if self.x_pos - self.rad - self.speed > 0:
+                    self.x_pos -= self.speed
+            if rand == 2:
+                if self.y_pos + self.rad + self.speed < 700:
+                    self.y_pos += self.speed
+            if rand == 3:
+                if self.y_pos - self.rad - self.speed > 0:
+                    self.y_pos -= self.speed
 
     def move_towards(self, x_pos, y_pos):
         """moves creature towards given pair of coordinates"""
-        try:
-            (d_x, d_y) = ((x_pos - self.x_pos)/math.sqrt((x_pos - self.x_pos) ** 2 + (y_pos - self.y_pos) ** 2),
-                          (y_pos - self.y_pos)/math.sqrt((y_pos - self.y_pos) ** 2 + (x_pos - self.y_pos) ** 2))
-        except ZeroDivisionError:
-            (d_x, d_y) = (0, 0)
-        self.x_pos += d_x * self.speed
-        self.y_pos += d_y * self.speed
+        if self.x_pos < x_pos:
+            self.x_pos += self.speed
+        else:
+            self.x_pos -= self.speed
+        if self.y_pos < y_pos:
+            self.y_pos += self.speed
+        else:
+            self.y_pos -= self.speed
 
     def eat(self):
         """increases satiation after eating"""

@@ -28,7 +28,7 @@ class Genome():
     def mutate(self):
         """random chance of gene mutation"""
         rand = random.randint(1, 100)
-        if rand <= 40:  # very high chance to make it more interesting
+        if rand <= 80:  # very high chance to make it more interesting
             self.dna[random.randrange(5)] += 1
         elif rand > 80:
             self.dna[random.randrange(5)] -= 1
