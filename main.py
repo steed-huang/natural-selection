@@ -17,8 +17,8 @@ def spawn(num):
 def spawn_food(num):
     """spawns num food in random locations"""
     for _ in range(num):
-        x_pos = random.randrange(100, 600)
-        y_pos = random.randrange(100, 600)
+        x_pos = random.randrange(700)
+        y_pos = random.randrange(700)
         pg.FOOD.append(food.Food(x_pos, y_pos))
 
 
@@ -47,13 +47,13 @@ def redraw():
     pygame.display.update()
 
 
-spawn(5)
-spawn_food(100)
+spawn(10)
+spawn_food(300)
 RUN = True
 
 while RUN:
     TIME = pygame.time.get_ticks()
-    pygame.time.wait(10)  # uses less cpu than delay
+    pygame.time.wait(5)  # uses less cpu than delay
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

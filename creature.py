@@ -19,7 +19,7 @@ class Creature():
         self.rad = 10
         self.health = 30 + 30 * ((10 * self.gene.dna[0]) / 100)
         self.damage = 10 + 10 * ((10 * self.gene.dna[1]) / 100)
-        self.speed = 1 + ((10 * self.gene.dna[2]) / 100)
+        self.speed = 0.5 + 0.5 * ((10 * self.gene.dna[2]) / 100)
         self.vision = 60 + 60 * ((10 * self.gene.dna[3]) / 100)
         self.aggro = 20 + 20 * ((10 * self.gene.dna[4]) / 100)
         self.satiation = 0
@@ -35,16 +35,16 @@ class Creature():
 
     def move(self):
         """moves creature"""
-        # breeding | bug: 2+ children sometimes (feature?)
+        # breeding | bug: 2 children sometimes (feature?)
         other_move = False
-        if self.satiation >= 2:
+        if self.satiation >= 3:
             for ctr in pg.CREATURES:
-                if ctr != self and ctr.satiation >= 2 and pg.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) <= self.vision:
+                if ctr != self and ctr.satiation >= 3 and pg.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) <= self.vision:
                     self.move_towards(ctr.x_pos, ctr.y_pos)
                     other_move = True
                     if pg.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) < self.rad * 2:
-                        self.satiation -= 2
-                        ctr.satiation -= 2
+                        self.satiation = 2
+                        ctr.satiation = 2
                         pg.CREATURES.append(
                             self.reproduce(self.x_pos, self.y_pos,
                                            self.gene.dna, ctr.gene.dna))
@@ -119,12 +119,12 @@ class Creature():
 
     def draw(self):
         """draws creature"""
-        if self.satiation >= 2:
+        if self.satiation >= 3:
             pg.WIN.blit(self.mc_img, (self.x_pos-self.rad,
                                       self.y_pos-self.rad))
         else:
             pg.WIN.blit(self.c_img, (self.x_pos-self.rad,
                                      self.y_pos-self.rad))
         # shows vision (for debug)
-        pygame.draw.circle(pg.WIN, (255, 0, 0),
-                           (round(self.x_pos), round(self.y_pos)), round(self.vision), 1)
+        # pygame.draw.circle(pg.WIN, (255, 0, 0),
+        #                   (round(self.x_pos), round(self.y_pos)), round(self.vision), 1)
