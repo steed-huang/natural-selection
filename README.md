@@ -17,8 +17,8 @@ Repo for experimenting with genetic algorithms in Python
 * Damage: damage points
 
 **Todo**
-* Redo creature pathfinding method so they dont get stuck
-* Prioritize breeding over eating
+* Create better gene combination/mutation methods
+* Improve breeding mechanics
 * Add combat mechanics
 * Tweak numbers/balance the simulation to be more realistic
 * Add some data visualizations
