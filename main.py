@@ -1,10 +1,6 @@
 """Natural Selection Creature Survival Simulation"""
-import sys
-import math
 import random
-import os
 import pygame
-
 import pg
 import creature
 import food
@@ -13,16 +9,16 @@ import food
 def spawn(num):
     """spawns num creatures"""
     for _ in range(num):
-        x_pos = random.randrange(700)
-        y_pos = random.randrange(700)
+        x_pos = random.randrange(100, 600)
+        y_pos = random.randrange(100, 600)
         pg.CREATURES.append(creature.Creature(x_pos, y_pos))
 
 
 def spawn_food(num):
     """spawns num food in random locations"""
     for _ in range(num):
-        x_pos = random.randrange(700)
-        y_pos = random.randrange(700)
+        x_pos = random.randrange(100, 600)
+        y_pos = random.randrange(100, 600)
         pg.FOOD.append(food.Food(x_pos, y_pos))
 
 
