@@ -8,6 +8,7 @@ WIN = pygame.display.set_mode((700, 700))
 pygame.display.set_caption("Natural Selection")
 
 LAST_SPAWN = 0
+LAST_PRINT = 0
 CREATURES = []
 FOOD = []
 

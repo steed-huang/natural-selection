@@ -9,8 +9,8 @@ import food
 def spawn(num):
     """spawns num creatures"""
     for _ in range(num):
-        x_pos = random.randrange(100, 600)
-        y_pos = random.randrange(100, 600)
+        x_pos = random.randrange(700)
+        y_pos = random.randrange(700)
         pg.CREATURES.append(creature.Creature(x_pos, y_pos))
 
 
@@ -37,6 +37,13 @@ def refill_food(num, refill_delay, time):
         pg.LAST_SPAWN = time
 
 
+def print_data(delay, time):
+    """prints average genome of population"""
+    if time - pg.LAST_PRINT >= delay:
+        # do something
+        pg.LAST_PRINT = time
+
+
 def redraw():
     """redraws entire game"""
     pg.WIN.fill((0, 0, 0))
@@ -47,19 +54,19 @@ def redraw():
     pygame.display.update()
 
 
-spawn(10)
-spawn_food(300)
+spawn(20)
+spawn_food(100)
 RUN = True
 
 while RUN:
     TIME = pygame.time.get_ticks()
-    pygame.time.wait(5)  # uses less cpu than delay
+    pygame.time.wait(1)  # uses less cpu than delay
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             RUN = False
 
-    refill_food(50, 10000, TIME)
+    refill_food(100, 5000, TIME)
     creature_action(TIME)
     redraw()
 
