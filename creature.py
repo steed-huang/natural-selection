@@ -23,7 +23,7 @@ class Creature():
         self.aggro = 20 + 20 * ((20 * self.gene.dna[4]) / 100)
         self.satiation = 0
         self.last_starve = 0
-        self.hunger = 5000
+        self.hunger = 10000 - 2000 * self.speed - 12 * self.vision
         self.c_img = pygame.transform.scale(
             self.img1, (self.rad*2, self.rad*2))
         self.mc_img = pygame.transform.scale(
@@ -106,17 +106,16 @@ class Creature():
         new_creature.gene.combine(dna1, dna2)
         new_creature.gene.mutate()
         new_creature.update_atts()
-        print(dna1, dna2)
-        print(new_creature.gene.dna)
         return new_creature
 
     def update_atts(self):
         """updates attributes to be affected by genes"""
         self.health = 30 + 30 * ((10 * self.gene.dna[0]) / 100)
         self.damage = 10 + 10 * ((10 * self.gene.dna[1]) / 100)
-        self.speed = 1 + ((10 * self.gene.dna[2]) / 100)
-        self.vision = 50 + 50 * ((10 * self.gene.dna[3]) / 100)
+        self.speed = 0.5 + 0.5 * ((10 * self.gene.dna[2]) / 100)
+        self.vision = 80 + 80 * ((10 * self.gene.dna[3]) / 100)
         self.aggro = 20 + 20 * ((10 * self.gene.dna[4]) / 100)
+        self.hunger = 10000 - 2000 * self.speed - 12 * self.vision
 
     def draw(self):
         """draws creature"""

@@ -41,6 +41,7 @@ def print_data(delay, time):
     """prints average genome of population"""
     if time - pg.LAST_PRINT >= delay:
         # do something
+        print(len(pg.CREATURES))
         pg.LAST_PRINT = time
 
 
@@ -66,6 +67,7 @@ while RUN:
         if event.type == pygame.QUIT:
             RUN = False
 
+    print_data(5000, TIME)
     refill_food(100, 5000, TIME)
     creature_action(TIME)
     redraw()

@@ -17,9 +17,9 @@ Repo for experimenting with genetic algorithms in Python
 * Damage: damage points
 
 **Todo**
-* Add cost to higher/better stats (go hungry faster)
 * Create better gene combination/mutation methods
 * Improve breeding mechanics
+* Improve/fix movement/pathfinding methods
 * Add combat mechanics
 * Tweak numbers/balance the simulation to be more realistic
 * Add some data visualizations
