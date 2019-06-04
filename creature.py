@@ -10,6 +10,7 @@ class Creature():
     """creature has different attributes based off its genes"""
     img1 = pygame.image.load('assets/creature.png')
     img2 = pygame.image.load('assets/mating_creature.png')
+    img3 = pygame.image.load('assets/attacking_creature.png')
 
     def __init__(self, x, y):
         self.gene = genome.Genome()
@@ -28,22 +29,44 @@ class Creature():
             self.img1, (self.rad*2, self.rad*2))
         self.mc_img = pygame.transform.scale(
             self.img2, (self.rad*2, self.rad*2))
+        self.ac_img = pygame.transform.scale(
+            self.img3, (self.rad*2, self.rad*2))
+        self.attack_ticks = 0
+
+    def attack(self):
+        """determines if the creature is in attack mode"""
+        rand = random.randint(1, 100000)
+        if (self.aggro > rand):
+            print(self.aggro)
+            self.attack_ticks = 1000
 
     def move(self):
         """moves creature"""
-        # breeding
+        self.attack_ticks -= 1
         other_move = False
-        if self.satiation >= 3:
+        # attacking
+        if self.attack_ticks >= 0:
             for ctr in pg.CREATURES:
-                if ctr != self and ctr.satiation >= 3 and pg.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) <= self.vision:
+                if ctr != self and pg.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) <= self.vision:
                     self.move_towards(ctr.x_pos, ctr.y_pos)
                     other_move = True
                     if pg.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) < self.rad * 2:
-                        self.satiation = 2
-                        ctr.satiation = 2
-                        pg.CREATURES.append(
-                            self.reproduce(self.x_pos, self.y_pos,
-                                           self.gene.dna, ctr.gene.dna))
+                        ctr.health -= self.damage
+                        self.hunger += 2
+
+        # breeding
+        if not other_move:
+            if self.satiation >= 3:
+                for ctr in pg.CREATURES:
+                    if ctr != self and ctr.satiation >= 3 and ctr.attack_ticks < 0 and pg.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) <= self.vision:
+                        self.move_towards(ctr.x_pos, ctr.y_pos)
+                        other_move = True
+                        if pg.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) < self.rad * 2:
+                            self.satiation = 2
+                            ctr.satiation = 2
+                            pg.CREATURES.append(
+                                self.reproduce(self.x_pos, self.y_pos,
+                                               self.gene.dna, ctr.gene.dna))
         # eating
         if not other_move:
             closest = Food(9999, 9999)
@@ -94,7 +117,7 @@ class Creature():
         elif time - self.last_starve >= self.hunger:
             self.satiation -= 1
             self.last_starve = time
-        if self.satiation < 0:
+        if self.satiation < 0 or self.health < 0:
             pg.CREATURES.pop(pg.CREATURES.index(self))
 
     def reproduce(self, x_pos, y_pos, dna1, dna2):
@@ -116,7 +139,10 @@ class Creature():
 
     def draw(self):
         """draws creature"""
-        if self.satiation >= 3:
+        if self.attack_ticks >= 0:
+            pg.WIN.blit(self.ac_img, (self.x_pos-self.rad,
+                                      self.y_pos-self.rad))
+        elif self.satiation >= 3:
             pg.WIN.blit(self.mc_img, (self.x_pos-self.rad,
                                       self.y_pos-self.rad))
         else:

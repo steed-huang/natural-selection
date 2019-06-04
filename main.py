@@ -26,6 +26,7 @@ def creature_action(time):
     """carries out all creature processes"""
     for ctr in pg.CREATURES:
         ctr.move()
+        ctr.attack()
         ctr.starve(time)
 
 
