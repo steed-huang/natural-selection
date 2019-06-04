@@ -25,7 +25,7 @@ def spawn_food(num):
 def creature_action(time):
     """carries out all creature processes"""
     for ctr in pg.CREATURES:
-        ctr.move()
+        ctr.move(time)
         ctr.attack()
         ctr.starve(time)
 
