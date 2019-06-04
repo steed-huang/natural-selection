@@ -23,18 +23,15 @@ class Creature():
         self.aggro = 20 + 20 * ((20 * self.gene.dna[4]) / 100)
         self.satiation = 0
         self.last_starve = 0
-        self.hunger = 10000 - 2000 * self.speed - 12 * self.vision
+        self.hunger = 8000 - 1000 * self.speed - 6 * self.vision
         self.c_img = pygame.transform.scale(
             self.img1, (self.rad*2, self.rad*2))
         self.mc_img = pygame.transform.scale(
             self.img2, (self.rad*2, self.rad*2))
 
-        # self.hitbox = (self.x_pos-self.rad, self.y_pos -
-        #               self.rad, self.rad * 2, self.rad*2)
-
     def move(self):
         """moves creature"""
-        # breeding | bug: 2 children sometimes (feature?), creature freezes if mate and food in range?
+        # breeding
         other_move = False
         if self.satiation >= 3:
             for ctr in pg.CREATURES:
@@ -47,7 +44,7 @@ class Creature():
                         pg.CREATURES.append(
                             self.reproduce(self.x_pos, self.y_pos,
                                            self.gene.dna, ctr.gene.dna))
-        # eating | bug: food can be eaten by multiple overlapping creatures
+        # eating
         if not other_move:
             closest = Food(9999, 9999)
             for apple in pg.FOOD:
@@ -115,7 +112,7 @@ class Creature():
         self.speed = 0.5 + 0.5 * ((10 * self.gene.dna[2]) / 100)
         self.vision = 80 + 80 * ((10 * self.gene.dna[3]) / 100)
         self.aggro = 20 + 20 * ((10 * self.gene.dna[4]) / 100)
-        self.hunger = 10000 - 2000 * self.speed - 12 * self.vision
+        self.hunger = 8000 - 1000 * self.speed - 6 * self.vision
 
     def draw(self):
         """draws creature"""

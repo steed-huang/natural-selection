@@ -9,16 +9,16 @@ import food
 def spawn(num):
     """spawns num creatures"""
     for _ in range(num):
-        x_pos = random.randrange(700)
-        y_pos = random.randrange(700)
+        x_pos = random.randrange(100, 600)
+        y_pos = random.randrange(100, 600)
         pg.CREATURES.append(creature.Creature(x_pos, y_pos))
 
 
 def spawn_food(num):
     """spawns num food in random locations"""
     for _ in range(num):
-        x_pos = random.randrange(700)
-        y_pos = random.randrange(700)
+        x_pos = random.randrange(100, 600)
+        y_pos = random.randrange(100, 600)
         pg.FOOD.append(food.Food(x_pos, y_pos))
 
 
@@ -32,7 +32,7 @@ def creature_action(time):
 def refill_food(num, refill_delay, time):
     """spawns in num food in refill_delay increments"""
     if time - pg.LAST_SPAWN >= refill_delay:
-        pg.FOOD = []
+        # pg.FOOD = []
         spawn_food(num)
         pg.LAST_SPAWN = time
 
@@ -40,7 +40,6 @@ def refill_food(num, refill_delay, time):
 def print_data(delay, time):
     """prints average genome of population"""
     if time - pg.LAST_PRINT >= delay:
-        # do something
         print(len(pg.CREATURES))
         pg.LAST_PRINT = time
 
@@ -55,8 +54,8 @@ def redraw():
     pygame.display.update()
 
 
-spawn(20)
-spawn_food(100)
+spawn(10)
+spawn_food(20)
 RUN = True
 
 while RUN:
@@ -68,7 +67,7 @@ while RUN:
             RUN = False
 
     print_data(5000, TIME)
-    refill_food(100, 5000, TIME)
+    refill_food(10, 1000, TIME)
     creature_action(TIME)
     redraw()
 
