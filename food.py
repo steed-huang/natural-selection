@@ -1,6 +1,5 @@
 """food class module"""
 import pygame
-import pg
 
 
 class Food():
@@ -13,6 +12,6 @@ class Food():
         self.rad = 5
         self.f_img = pygame.transform.scale(self.img, (self.rad*2, self.rad*2))
 
-    def draw(self):
+    def draw(self, WIN):
         """draws food"""
-        pg.WIN.blit(self.f_img, (self.x_pos-(self.rad), self.y_pos-(self.rad)))
+        WIN.blit(self.f_img, (self.x_pos-(self.rad), self.y_pos-(self.rad)))

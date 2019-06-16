@@ -1,7 +1,7 @@
 """creature class module"""
+import math
 import random
 import pygame
-import pg
 import genome
 from food import Food
 
@@ -38,19 +38,19 @@ class Creature():
     def attack(self):
         """determines if the creature is in attack mode"""
         rand = random.randint(1, 100000)
-        if (self.aggro > rand):
+        if self.aggro > rand:
             self.attack_ticks = 1000
 
-    def move(self, time):
+    def move(self, CREATURES, FOOD, time):
         """moves creature"""
         self.attack_ticks -= 1
         other_move = False
         # attacking
         if self.attack_ticks >= 0:
-            for ctr in pg.CREATURES:
-                if ctr != self and pg.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) <= self.vision:
+            for ctr in CREATURES:
+                if ctr != self and self.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) <= self.vision:
                     self.move_towards(ctr.x_pos, ctr.y_pos)
-                    if pg.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) < self.rad * 1.5:
+                    if self.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) < self.rad * 1.5:
                         if time - self.last_attack >= 1000:
                             ctr.health -= self.damage
                             self.satiation += 3
@@ -59,14 +59,14 @@ class Creature():
         # breeding
         if not other_move and self.attack_ticks < 0:
             if self.satiation >= 3:
-                for ctr in pg.CREATURES:
-                    if ctr != self and ctr.satiation >= 3 and ctr.attack_ticks < 0 and pg.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) <= self.vision:
+                for ctr in CREATURES:
+                    if ctr != self and ctr.satiation >= 3 and ctr.attack_ticks < 0 and self.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) <= self.vision:
                         self.move_towards(ctr.x_pos, ctr.y_pos)
-                        if pg.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) < self.rad * 1.5:
+                        if self.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) < self.rad * 1.5:
                             if time - self.last_breed >= 1000:
                                 self.satiation -= 2
                                 ctr.satiation -= 2
-                                pg.CREATURES.append(
+                                CREATURES.append(
                                     self.reproduce(self.x_pos, self.y_pos,
                                                    self.gene.dna, ctr.gene.dna))
                                 self.last_breed = time
@@ -74,13 +74,13 @@ class Creature():
         # eating
         if not other_move and self.attack_ticks < 0:
             closest = Food(9999, 9999)
-            for apple in pg.FOOD:
-                if pg.distance((self.x_pos, self.y_pos), (apple.x_pos, apple.y_pos)) < pg.distance((self.x_pos, self.y_pos), (closest.x_pos, closest.y_pos)):
+            for apple in FOOD:
+                if self.distance((self.x_pos, self.y_pos), (apple.x_pos, apple.y_pos)) < self.distance((self.x_pos, self.y_pos), (closest.x_pos, closest.y_pos)):
                     closest = apple
-            if pg.distance((self.x_pos, self.y_pos), (closest.x_pos, closest.y_pos)) <= self.vision:
+            if self.distance((self.x_pos, self.y_pos), (closest.x_pos, closest.y_pos)) <= self.vision:
                 self.move_towards(closest.x_pos, closest.y_pos)
-                if pg.distance((self.x_pos, self.y_pos), (closest.x_pos, closest.y_pos)) < closest.rad * 1.5:
-                    pg.FOOD.pop(pg.FOOD.index(closest))
+                if self.distance((self.x_pos, self.y_pos), (closest.x_pos, closest.y_pos)) < closest.rad * 1.5:
+                    FOOD.pop(FOOD.index(closest))
                     self.eat()
                 other_move = True
         # random jiggle movement
@@ -114,7 +114,7 @@ class Creature():
         """increases satiation after eating"""
         self.satiation += 1
 
-    def starve(self, time):
+    def starve(self, CREATURES, time):
         """uses up satiation every 'hunger' seconds, dies if no satiation"""
         if self.last_starve == 0:
             self.last_starve = time
@@ -122,7 +122,7 @@ class Creature():
             self.satiation -= 1
             self.last_starve = time
         if self.satiation < 0 or self.health < 0:
-            pg.CREATURES.pop(pg.CREATURES.index(self))
+            CREATURES.pop(CREATURES.index(self))
 
     def reproduce(self, x_pos, y_pos, dna1, dna2):
         """creates new child creature"""
@@ -141,17 +141,21 @@ class Creature():
         self.aggro = 20 + 20 * ((10 * self.gene.dna[4]) / 100)
         self.hunger = 8000 - 1000 * self.speed - 6 * self.vision
 
-    def draw(self):
+    def distance(self, point1, point2):
+        """distance formula function that takes two tuples"""
+        return math.sqrt((point1[0] - point2[0])**2 + (point1[1] - point2[1])**2)
+
+    def draw(self, WIN):
         """draws creature"""
         if self.attack_ticks >= 0:
-            pg.WIN.blit(self.ac_img, (self.x_pos-self.rad,
-                                      self.y_pos-self.rad))
+            WIN.blit(self.ac_img, (self.x_pos-self.rad,
+                                   self.y_pos-self.rad))
         elif self.satiation >= 3:
-            pg.WIN.blit(self.mc_img, (self.x_pos-self.rad,
-                                      self.y_pos-self.rad))
+            WIN.blit(self.mc_img, (self.x_pos-self.rad,
+                                   self.y_pos-self.rad))
         else:
-            pg.WIN.blit(self.c_img, (self.x_pos-self.rad,
-                                     self.y_pos-self.rad))
+            WIN.blit(self.c_img, (self.x_pos-self.rad,
+                                  self.y_pos-self.rad))
         # shows vision (for debug)
-        # pygame.draw.circle(pg.WIN, (255, 0, 0),
+        # pygame.draw.circle(WIN, (255, 0, 0),
         #                   (round(self.x_pos), round(self.y_pos)), round(self.vision), 1)
