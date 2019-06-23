@@ -33,7 +33,6 @@ class Creature():
             self.img3, (self.rad*2, self.rad*2))
         self.attack_ticks = 0
         self.last_attack = 0
-        self.last_breed = 0
 
     def attack(self):
         """determines if the creature is in attack mode"""
@@ -45,9 +44,19 @@ class Creature():
         """moves creature"""
         self.attack_ticks -= 1
         other_move = False
-        # attacking
-        if self.attack_ticks >= 0:
-            for ctr in CREATURES:
+        # breeding & attacking
+        for ctr in CREATURES:
+            if self.satiation >= 7 and self.attack_ticks < 0:
+                if ctr != self and ctr.satiation >= 7 and ctr.attack_ticks < 0 and self.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) <= self.vision:
+                    self.move_towards(ctr.x_pos, ctr.y_pos)
+                    if self.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) < self.rad * 1.5:
+                        self.satiation -= 5
+                        ctr.satiation -= 5
+                        CREATURES.append(
+                            self.reproduce(self.x_pos, self.y_pos,
+                                           self.gene.dna, ctr.gene.dna))
+                    other_move = True
+            elif self.attack_ticks >= 0:
                 if ctr != self and self.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) <= self.vision:
                     self.move_towards(ctr.x_pos, ctr.y_pos)
                     if self.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) < self.rad * 1.5:
@@ -55,22 +64,8 @@ class Creature():
                             ctr.health -= self.damage
                             self.satiation += 3
                             self.last_attack = time
+                    other_move = True
 
-        # breeding
-        if not other_move and self.attack_ticks < 0:
-            if self.satiation >= 3:
-                for ctr in CREATURES:
-                    if ctr != self and ctr.satiation >= 3 and ctr.attack_ticks < 0 and self.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) <= self.vision:
-                        self.move_towards(ctr.x_pos, ctr.y_pos)
-                        if self.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) < self.rad * 1.5:
-                            if time - self.last_breed >= 1000:
-                                self.satiation -= 2
-                                ctr.satiation -= 2
-                                CREATURES.append(
-                                    self.reproduce(self.x_pos, self.y_pos,
-                                                   self.gene.dna, ctr.gene.dna))
-                                self.last_breed = time
-                        other_move = True
         # eating
         if not other_move and self.attack_ticks < 0:
             closest = Food(9999, 9999)
@@ -83,6 +78,7 @@ class Creature():
                     FOOD.pop(FOOD.index(closest))
                     self.eat()
                 other_move = True
+
         # random jiggle movement
         if not other_move:
             rand = random.randrange(4)
