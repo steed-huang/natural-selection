@@ -33,6 +33,7 @@ class Creature():
             self.img3, (self.rad*2, self.rad*2))
         self.attack_ticks = 0
         self.last_attack = 0
+        self.closest_food = 0
 
     def attack(self):
         """determines if the creature is in attack mode"""
@@ -64,20 +65,25 @@ class Creature():
                             ctr.health -= self.damage
                             self.satiation += 3
                             self.last_attack = time
-                    other_move = True
 
-        # eating
+        # eating | does not move to closest everytime (should rework to that with good algorithm)
         if not other_move and self.attack_ticks < 0:
-            closest = Food(9999, 9999)
-            for apple in FOOD:
-                if self.distance((self.x_pos, self.y_pos), (apple.x_pos, apple.y_pos)) < self.distance((self.x_pos, self.y_pos), (closest.x_pos, closest.y_pos)):
-                    closest = apple
-            if self.distance((self.x_pos, self.y_pos), (closest.x_pos, closest.y_pos)) <= self.vision:
-                self.move_towards(closest.x_pos, closest.y_pos)
-                if self.distance((self.x_pos, self.y_pos), (closest.x_pos, closest.y_pos)) < closest.rad * 1.5:
-                    FOOD.pop(FOOD.index(closest))
-                    self.eat()
-                other_move = True
+            if self.closest_food not in FOOD:
+                for apple in FOOD:
+                    if self.distance((self.x_pos, self.y_pos), (apple.x_pos, apple.y_pos)) <= self.vision:
+                        self.closest_food = apple
+                        break
+            if self.closest_food != 0:
+                self.move_towards(self.closest_food.x_pos,
+                                  self.closest_food.y_pos)
+                if self.distance((self.x_pos, self.y_pos), (self.closest_food.x_pos, self.closest_food.y_pos)) < self.closest_food.rad * 1.5:
+                    try:
+                        # sometimes is deleted twice?
+                        FOOD.pop(FOOD.index(self.closest_food))
+                        self.closest_food = 0
+                        self.eat()
+                    except ValueError:
+                        pass
 
         # random jiggle movement
         if not other_move:
