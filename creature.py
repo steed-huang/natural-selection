@@ -34,6 +34,8 @@ class Creature():
         self.attack_ticks = 0
         self.last_attack = 0
         self.closest_food = 0
+        self.wander_dir = random.randrange(4)
+        self.wander_count = 1000
 
     def attack(self):
         """determines if the creature is in attack mode"""
@@ -65,9 +67,10 @@ class Creature():
                             ctr.health -= self.damage
                             self.satiation += 3
                             self.last_attack = time
+                    other_move = True
 
         # eating | does not move to closest everytime (should rework to that with good algorithm)
-        if not other_move and self.attack_ticks < 0:
+        if not other_move:
             if self.closest_food not in FOOD:
                 for apple in FOOD:
                     if self.distance((self.x_pos, self.y_pos), (apple.x_pos, apple.y_pos)) <= self.vision:
@@ -84,22 +87,37 @@ class Creature():
                         self.eat()
                     except ValueError:
                         pass
+                other_move = True
 
-        # random jiggle movement
+        # wandering movement
         if not other_move:
-            rand = random.randrange(4)
-            if rand == 0:
-                if self.x_pos + self.rad + self.speed < 700:
+            if self.wander_count <= 0:
+                self.wander_dir = random.randrange(4)
+                self.wander_count = 100
+            if self.wander_dir == 0:
+                if self.x_pos + self.rad + self.speed > 700:
+                    self.wander_dir = 1
+                else:
                     self.x_pos += self.speed
-            if rand == 1:
-                if self.x_pos - self.rad - self.speed > 0:
+                self.wander_count -= 1
+            elif self.wander_dir == 1:
+                if self.x_pos - self.rad - self.speed < 0:
+                    self.wander_dir = 0
+                else:
                     self.x_pos -= self.speed
-            if rand == 2:
-                if self.y_pos + self.rad + self.speed < 700:
+                self.wander_count -= 1
+            elif self.wander_dir == 2:
+                if self.y_pos + self.rad + self.speed > 700:
+                    self.wander_dir = 3
+                else:
                     self.y_pos += self.speed
-            if rand == 3:
-                if self.y_pos - self.rad - self.speed > 0:
+                self.wander_count -= 1
+            elif self.wander_dir == 3:
+                if self.y_pos - self.rad - self.speed < 0:
+                    self.wander_dir = 2
+                else:
                     self.y_pos -= self.speed
+                self.wander_count -= 1
 
     def move_towards(self, x_pos, y_pos):
         """moves creature towards given pair of coordinates"""

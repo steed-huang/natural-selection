@@ -20,7 +20,7 @@ class Game():
 
     def run(self):
         """main game loop"""
-        self.spawn_creature(10)
+        self.spawn_creature(15)
         self.spawn_food(20)
         RUN = True
         while RUN:
@@ -32,7 +32,7 @@ class Game():
                     RUN = False
 
             self.print_data(5000, TIME)
-            self.refill_food(10, 1000, TIME)
+            self.refill_food(20, 1000, TIME)
             self.creature_action(TIME)
             self.redraw()
 
@@ -41,15 +41,15 @@ class Game():
     def spawn_creature(self, num):
         """spawns num creatures"""
         for _ in range(num):
-            x_pos = random.randrange(100, 600)
-            y_pos = random.randrange(100, 600)
+            x_pos = random.randrange(1, 700)
+            y_pos = random.randrange(1, 700)
             self.CREATURES.append(creature.Creature(x_pos, y_pos))
 
     def spawn_food(self, num):
         """spawns num food in random locations"""
         for _ in range(num):
-            x_pos = random.randrange(100, 600)
-            y_pos = random.randrange(100, 600)
+            x_pos = random.randrange(1, 700)
+            y_pos = random.randrange(1, 700)
             self.FOOD.append(food.Food(x_pos, y_pos))
 
     def creature_action(self, time):
