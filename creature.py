@@ -3,7 +3,6 @@ import math
 import random
 import pygame
 import genome
-from food import Food
 
 
 class Creature():
@@ -43,21 +42,20 @@ class Creature():
         if self.aggro > rand:
             self.attack_ticks = 1000
 
-    def move(self, CREATURES, FOOD, time):
+    def move(self, all_ctr, all_food, time):
         """moves creature"""
         self.attack_ticks -= 1
         other_move = False
         # breeding & attacking
-        for ctr in CREATURES:
+        for ctr in all_ctr:
             if self.satiation >= 7 and self.attack_ticks < 0:
                 if ctr != self and ctr.satiation >= 7 and ctr.attack_ticks < 0 and self.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) <= self.vision:
                     self.move_towards(ctr.x_pos, ctr.y_pos)
                     if self.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) < self.rad * 1.5:
                         self.satiation -= 5
                         ctr.satiation -= 5
-                        CREATURES.append(
-                            self.reproduce(self.x_pos, self.y_pos,
-                                           self.gene.dna, ctr.gene.dna))
+                        all_ctr.append(self.reproduce(
+                            self.x_pos, self.y_pos, self.gene.dna, ctr.gene.dna))
                     other_move = True
             elif self.attack_ticks >= 0:
                 if ctr != self and self.distance((self.x_pos, self.y_pos), (ctr.x_pos, ctr.y_pos)) <= self.vision:
@@ -71,8 +69,8 @@ class Creature():
 
         # eating | does not move to closest everytime (should rework to that with good algorithm)
         if not other_move:
-            if self.closest_food not in FOOD:
-                for apple in FOOD:
+            if self.closest_food not in all_food:
+                for apple in all_food:
                     if self.distance((self.x_pos, self.y_pos), (apple.x_pos, apple.y_pos)) <= self.vision:
                         self.closest_food = apple
                         break
@@ -82,7 +80,7 @@ class Creature():
                 if self.distance((self.x_pos, self.y_pos), (self.closest_food.x_pos, self.closest_food.y_pos)) < self.closest_food.rad * 1.5:
                     try:
                         # sometimes is deleted twice?
-                        FOOD.pop(FOOD.index(self.closest_food))
+                        all_food.pop(all_food.index(self.closest_food))
                         self.closest_food = 0
                         self.eat()
                     except ValueError:
@@ -134,7 +132,7 @@ class Creature():
         """increases satiation after eating"""
         self.satiation += 1
 
-    def starve(self, CREATURES, time):
+    def starve(self, all_ctr, time):
         """uses up satiation every 'hunger' seconds, dies if no satiation"""
         if self.last_starve == 0:
             self.last_starve = time
@@ -142,7 +140,7 @@ class Creature():
             self.satiation -= 1
             self.last_starve = time
         if self.satiation < 0 or self.health < 0:
-            CREATURES.pop(CREATURES.index(self))
+            all_ctr.pop(all_ctr.index(self))
 
     def reproduce(self, x_pos, y_pos, dna1, dna2):
         """creates new child creature"""
@@ -165,16 +163,16 @@ class Creature():
         """distance formula function that takes two tuples"""
         return math.sqrt((point1[0] - point2[0])**2 + (point1[1] - point2[1])**2)
 
-    def draw(self, WIN):
+    def draw(self, win):
         """draws creature"""
         if self.attack_ticks >= 0:
-            WIN.blit(self.ac_img, (self.x_pos-self.rad,
+            win.blit(self.ac_img, (self.x_pos-self.rad,
                                    self.y_pos-self.rad))
         elif self.satiation >= 3:
-            WIN.blit(self.mc_img, (self.x_pos-self.rad,
+            win.blit(self.mc_img, (self.x_pos-self.rad,
                                    self.y_pos-self.rad))
         else:
-            WIN.blit(self.c_img, (self.x_pos-self.rad,
+            win.blit(self.c_img, (self.x_pos-self.rad,
                                   self.y_pos-self.rad))
         # shows vision (for debug)
         # pygame.draw.circle(WIN, (255, 0, 0),

@@ -12,6 +12,6 @@ class Food():
         self.rad = 5
         self.f_img = pygame.transform.scale(self.img, (self.rad*2, self.rad*2))
 
-    def draw(self, WIN):
+    def draw(self, win):
         """draws food"""
-        WIN.blit(self.f_img, (self.x_pos-(self.rad), self.y_pos-(self.rad)))
+        win.blit(self.f_img, (self.x_pos-(self.rad), self.y_pos-(self.rad)))
