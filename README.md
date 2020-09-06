@@ -8,8 +8,7 @@ Repo for experimenting with genetic algorithm simulations in Python
 - [Pygame](https://www.pygame.org/wiki/about)
 
 ### Demo
-
-![](assets/example.gif)
+<img src="assets/example.gif" width="250" height="250"/>
 
 **Description**
 - Creatures with different gene based traits will explore and live their lives
